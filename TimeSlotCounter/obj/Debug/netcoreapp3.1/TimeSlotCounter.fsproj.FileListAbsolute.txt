@@ -1,0 +1,7 @@
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\bin\Debug\netcoreapp3.1\TimeSlotCounter.deps.json
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\bin\Debug\netcoreapp3.1\TimeSlotCounter.dll
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\bin\Debug\netcoreapp3.1\TimeSlotCounter.pdb
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\obj\Debug\netcoreapp3.1\TimeSlotCounter.AssemblyInfoInputs.cache
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\obj\Debug\netcoreapp3.1\TimeSlotCounter.AssemblyInfo.fs
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\obj\Debug\netcoreapp3.1\TimeSlotCounter.dll
+C:\Users\Denis\source\repos\TimeSlotCounter\TimeSlotCounter\obj\Debug\netcoreapp3.1\TimeSlotCounter.pdb
