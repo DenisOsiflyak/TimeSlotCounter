@@ -37,15 +37,15 @@ module TimeSlotHelper =
             match addSlot with
                 | addSlot when addSlot.StartDate < addSlot.EndDate -> 
                     slots
-                          |> List.map (fun slot -> match slot with 
-                                                          | slot when isSlotIntoRange addSlot slot 
-                                                                  ->
-                                                                    let startDate =
-                                                                        if addSlot.EndDate > slot.StartDate && addSlot.EndDate < slot.EndDate
-                                                                            then addSlot.EndDate
-                                                                        else slot.StartDate
-                                                                    let endDate = greatest slot.EndDate addSlot.EndDate
-                                                                    { StartDate = startDate; EndDate = endDate }
-                                                          | _ -> slot)
+                          |> List.map (fun slot -> match slot with
+                                                        | slot when isSlotIntoRange addSlot slot
+                                                            ->
+                                                                let startDate =
+                                                                    if addSlot.EndDate > slot.StartDate && addSlot.EndDate < slot.EndDate
+                                                                        then addSlot.EndDate
+                                                                    else slot.StartDate
+                                                                let endDate = greatest slot.EndDate addSlot.EndDate
+                                                                { StartDate = startDate; EndDate = endDate }
+                                                        | _ -> slot)
                 | _ -> raise (new ArgumentException("Slot start date can't be more than end date"))
             
