@@ -63,9 +63,33 @@ type TestClass () =
 
     [<TestMethod>]
     member _.AddTimeSlot() =
+        let expexted = [
+            { StartDate = createDate { startDate with Month = 1; Date = 1 };
+                EndDate = createDate { startDate with Month = 1; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 2; Date = 1 };
+                EndDate = createDate { startDate with Month = 2; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 3; Date = 1 };  //here
+                EndDate = createDate { startDate with Month = 4; Date = 5 } } //here
+            { StartDate = createDate { startDate with Month = 4; Date = 5 };  //here
+                EndDate = createDate { startDate with Month = 4; Date = 15 } }//here
+            { StartDate = createDate { startDate with Month = 5; Date = 1 };
+                EndDate = createDate { startDate with Month = 5; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 6; Date = 1 };
+                EndDate = createDate { startDate with Month = 6; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 7; Date = 1 };
+                EndDate = createDate { startDate with Month = 7; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 8; Date = 1 };
+                EndDate = createDate { startDate with Month = 8; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 9; Date = 1 };
+                EndDate = createDate { startDate with Month = 9; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 10; Date = 1 };
+                EndDate = createDate { startDate with Month = 10; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 11; Date = 1 };
+                EndDate = createDate { startDate with Month = 11; Date = 15 } }
+            { StartDate = createDate { startDate with Month = 12; Date = 1 };
+                EndDate = createDate { startDate with Month = 12; Date = 15 } }]
         let timeSlotToAdd = {
-            StartDate = createDate { startDate with Month = 3; Date = 1 };
-            EndDate = createDate { startDate with Month = 3; Date = 15 } }
+            StartDate = createDate { startDate with Month = 3; Date = 1 }; //2019.03.01
+            EndDate = createDate { startDate with Month = 4; Date = 5 } } //2019.03.20
         let actual = TimeSlotHelper.(+) timeSlotToAdd testTimeSlots
-        let expectedCountSlots = 11
-        Assert.AreEqual (expectedCountSlots, actual.Length)
+        Assert.AreEqual (expexted, actual)
