@@ -9,6 +9,8 @@ module TimeSlotHelper =
         slot.StartDate < range.StartDate && slot.EndDate < range.EndDate
     let isSlotMoreThanStartDateAndEndDate range slot =
         slot.StartDate > range.StartDate && slot.EndDate > range.EndDate
+    let isSlotEndDateMoreThanStartDateAndLessThanEndDate range slot =
+        range.EndDate > slot.StartDate && range.EndDate < slot.EndDate
     let greatest firstDate secondDate = 
         if firstDate > secondDate then firstDate else secondDate
 
@@ -41,7 +43,7 @@ module TimeSlotHelper =
                                                         | slot when isSlotIntoRange addSlot slot
                                                             ->
                                                                 let startDate =
-                                                                    if addSlot.EndDate > slot.StartDate && addSlot.EndDate < slot.EndDate
+                                                                    if isSlotEndDateMoreThanStartDateAndLessThanEndDate addSlot slot
                                                                         then addSlot.EndDate
                                                                     else slot.StartDate
                                                                 let endDate = greatest slot.EndDate addSlot.EndDate
