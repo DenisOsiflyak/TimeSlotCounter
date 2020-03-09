@@ -39,15 +39,13 @@ module TimeSlotHelper =
             match addSlot with
                 | addSlot when addSlot.StartDate < addSlot.EndDate -> 
                     slots
-                          |> List.map (fun slot -> match slot with
-                                                        | slot when isSlotIntoRange addSlot slot
-                                                            ->
-                                                                let startDate =
-                                                                    if isSlotEndDateMoreThanStartDateAndLessThanEndDate addSlot slot
-                                                                        then addSlot.EndDate
-                                                                    else slot.StartDate
-                                                                let endDate = greatest slot.EndDate addSlot.EndDate
-                                                                { StartDate = startDate; EndDate = endDate }
-                                                        | _ -> slot)
+                          |> List.map (fun slot -> match isSlotIntoRange addSlot slot with
+                                                    | true ->
+                                                            let startDate = match isSlotEndDateMoreThanStartDateAndLessThanEndDate addSlot slot with
+                                                                            | true -> addSlot.EndDate
+                                                                            | _ -> slot.StartDate
+                                                            let endDate = greatest slot.EndDate addSlot.EndDate
+                                                            { StartDate = startDate; EndDate = endDate }
+                                                    | _ -> slot)
                 | _ -> raise (new ArgumentException("Slot start date can't be more than end date"))
             
