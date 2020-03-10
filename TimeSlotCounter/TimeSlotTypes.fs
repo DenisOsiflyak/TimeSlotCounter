@@ -6,4 +6,4 @@ open System
 type TimeSlot = {
     StartDate: DateTimeOffset
     EndDate: DateTimeOffset
-}    
+}
