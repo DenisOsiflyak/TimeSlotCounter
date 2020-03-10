@@ -26,9 +26,9 @@ module TimeSlotHelper =
         |> List.filter (fun slot -> isSlotIntoRange range slot)
         |> List.map (fun slot ->
             match slot with
-            | slot when not (isSlotIntoRange range slot) ->
-                { StartDate = slot.StartDate
-                  EndDate = slot.EndDate }
+            //| slot when not (isSlotIntoRange range slot) ->
+            //    { StartDate = slot.StartDate
+            //      EndDate = slot.EndDate }
             | slot when isSlotLessThanStartDateAndEndDate range slot ->
                 { StartDate = startDate
                   EndDate = slot.EndDate }
