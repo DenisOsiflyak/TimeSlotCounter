@@ -93,3 +93,72 @@ type TestClass () =
             EndDate = createDate { startDate with Month = 4; Date = 5 } } //2019.03.20
         let actual = TimeSlotHelper.(+) timeSlotToAdd testTimeSlots
         Assert.AreEqual (expexted, actual)
+
+    [<TestMethod>]
+    member _.CalculateTimeSlot() =
+        let testSpace = {
+            Id = 1;
+            Bookings = [
+                {
+                    Id = 1;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 10; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 15; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 } } 
+                }
+                {
+                    Id = 2;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 14; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 15; Minutes = 15; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 13; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 15; Minutes = 30; Seconds = 00 } } 
+                }
+                {
+                    Id = 3;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 16; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 17; Minutes = 15; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 15; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 17; Minutes = 30; Seconds = 00 } } 
+                }
+                {
+                    Id = 4;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 11; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 15; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 10; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 30; Seconds = 00 } } 
+                }
+                {
+                    Id = 5;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 4; Hours = 13; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 4; Hours = 14; Minutes = 15; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 4; Hours = 12; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 4; Hours = 14; Minutes = 30; Seconds = 00 } } 
+                }
+                {
+                    Id = 6;
+                    EventSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 00; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 30; Seconds = 00 } }
+                    ReservedSlot = { StartDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 15; Minutes = 50; Seconds = 00 };
+                                    EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 } } 
+                }
+            ];
+            SetupMinutes = 10<Minute>;
+            TeardownMinutes = 15<Minute> }
+        
+        let excludeBukingsId = Some(Set.ofList<int> [2; 3; 5])
+        let actual = TimeSlotHelper.calculateTimeSlots excludeBukingsId testSpace |> List.ofSeq
+
+        let expected = [
+            Available { StartDate = DateTimeOffset.MinValue;
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 50; Seconds = 00 } }
+            Busy { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 50; Seconds = 00 };
+                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 }}
+            Available { StartDate =  createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 };
+                    EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 10; Minutes = 50; Seconds = 00 } }
+            Busy { StartDate =  createDate { Year = 2020; Month = 6; Date = 6; Hours = 15; Minutes = 50; Seconds = 00 };
+                    EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 } }
+            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 };
+                    EndDate = DateTimeOffset.MaxValue }
+        ]
+       
+        Assert.AreEqual (expected, actual)
