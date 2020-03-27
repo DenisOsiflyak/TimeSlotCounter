@@ -56,55 +56,37 @@ module TimeSlotHelper =
         | _ -> raise (new ArgumentException("Slot start date can't be more than end date"))
 
     let calculateTimeSlots (excludeBookingIds: Set<int> option) (space: Space): seq<TimeSlotAvailability> =
-        let excludeBookings =
-            match excludeBookingIds with
-            | Some ids ->
-                space.Bookings
-                |> List.filter (fun x -> not (Seq.contains (x.Id) ids))
-            | None -> List.empty<Booking>
-
-        let pairs =
-            excludeBookings
-            |> List.ofSeq
-            |> List.pairwise
-
-        let rec calulateSlots (bookingPair: (Booking * Booking) list) =
-            match bookingPair with
+        let rec getTimeList (booking: Booking list) =
+            match booking with
             | head :: tail ->
                 match head with
-                | head when isFirstElement head pairs ->
-                    seq {
-                        yield Available
-                                  ({ StartDate = DateTimeOffset.MinValue
-                                     EndDate = (fst head).ReservedSlot.StartDate })
-                        yield Busy
-                                  ({ StartDate = (fst head).ReservedSlot.StartDate
-                                     EndDate = (fst head).ReservedSlot.EndDate })
-                        yield Available
-                                  ({ StartDate = (fst head).ReservedSlot.EndDate
-                                     EndDate = (snd head).ReservedSlot.StartDate })
-                    }
-                    :: (calulateSlots tail)
-                | head when isLastElement head pairs ->
-                    seq {
-                        yield Busy
-                                  ({ StartDate = (snd head).ReservedSlot.StartDate
-                                     EndDate = (snd head).ReservedSlot.EndDate })
-                        yield Available
-                                  ({ StartDate = (snd head).ReservedSlot.EndDate
-                                     EndDate = DateTimeOffset.MaxValue })
-                    }
-                    :: (calulateSlots tail)
-                | _ ->
-                    seq {
-                        yield Busy
-                                  ({ StartDate = (fst head).ReservedSlot.StartDate
-                                     EndDate = (fst head).ReservedSlot.EndDate })
-                        yield Available
-                                  ({ StartDate = (fst head).ReservedSlot.EndDate
-                                     EndDate = (snd head).ReservedSlot.StartDate })
-                    }
-                    :: (calulateSlots tail)
+                | head when isFirstElement head space.Bookings ->
+                    [ DateTimeOffset.MinValue; head.ReservedSlot.StartDate; head.ReservedSlot.EndDate ]
+                    :: (getTimeList tail)
+                | head when isLastElement head space.Bookings ->
+                    [ head.ReservedSlot.StartDate; head.ReservedSlot.EndDate; DateTimeOffset.MaxValue ]
+                    :: (getTimeList tail)
+                | _ -> [ head.ReservedSlot.StartDate; head.ReservedSlot.EndDate ] :: (getTimeList tail)
             | [] -> []
 
-        calulateSlots pairs |> Seq.collect (fun booking -> booking)
+
+        match excludeBookingIds with
+        | Some ids ->
+            space.Bookings
+            |> List.filter (fun booking -> not (Seq.contains (booking.Id) ids))
+            |> getTimeList
+            |> List.collect (fun time -> time)
+            |> List.sortBy (fun time -> time)
+            |> List.pairwise
+            |> List.mapi (fun i time ->
+                match i with
+                | i when (i % 2 = 0) ->
+                    Available
+                        ({ StartDate = fst time
+                           EndDate = snd time })
+                | _ ->
+                    Busy
+                        ({ StartDate = fst time
+                           EndDate = snd time }))
+            |> Seq.ofList
+        | None -> Seq.empty<TimeSlotAvailability>
