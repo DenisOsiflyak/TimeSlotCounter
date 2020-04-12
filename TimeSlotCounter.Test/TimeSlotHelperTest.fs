@@ -150,19 +150,19 @@ type TestClass () =
 
         let expected = [
             Available { StartDate = DateTimeOffset.MinValue;
-                            EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 50; Seconds = 00 } }
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 35; Seconds = 00 } }
+            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 40; Seconds = 00 };
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 10; Minutes = 35; Seconds = 00 } }
+            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 40; Seconds = 00 };
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 15; Minutes = 35; Seconds = 00 } }
+            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 55; Seconds = 00 };
+                            EndDate = DateTimeOffset.MaxValue }
             Busy { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 9; Minutes = 50; Seconds = 00 };
-                    EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 }}
-            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 };
-                    EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 10; Minutes = 50; Seconds = 00 } }
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 1; Hours = 11; Minutes = 30; Seconds = 00 }}
             Busy { StartDate =  createDate { Year = 2020; Month = 6; Date = 2; Hours = 10; Minutes = 50; Seconds = 00 };
-                    EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 30; Seconds = 00 } }
-            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 30; Seconds = 00 };
-                    EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 15; Minutes = 50; Seconds = 00 } }
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 2; Hours = 12; Minutes = 30; Seconds = 00 } }
             Busy { StartDate =  createDate { Year = 2020; Month = 6; Date = 6; Hours = 15; Minutes = 50; Seconds = 00 };
-                    EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 } }
-            Available { StartDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 };
-                    EndDate = DateTimeOffset.MaxValue }
+                            EndDate = createDate { Year = 2020; Month = 6; Date = 6; Hours = 16; Minutes = 45; Seconds = 00 } }
         ]
        
         Assert.AreEqual (expected, actual)
