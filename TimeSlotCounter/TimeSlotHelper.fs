@@ -65,9 +65,9 @@ module TimeSlotHelper =
         let toBusy slot =
             Busy({StartDate= fst slot; EndDate= snd slot})
 
-        let rec getSlots timeSlots converter =
-            match timeSlots with
-            | head::tail -> converter head :: (getSlots tail converter)
+        let rec getAvailiability slots converter =
+            match slots with
+            | head::tail -> converter head :: (getAvailiability tail converter)
             | [] -> []
 
         let booked =
@@ -88,6 +88,6 @@ module TimeSlotHelper =
                 | time when (snd time) = DateTimeOffset.MaxValue -> ((fst time).AddMinutes(float space.SetupMinutes), (snd time))
                 | _ -> ((fst time).AddMinutes(float space.SetupMinutes), (snd time).AddMinutes(- float space.TeardownMinutes)))
 
-        (getSlots booked toBusy)
-        |> List.append (getSlots vacant toAvailiable)
+        (getAvailiability booked toBusy)
+        |> List.append (getAvailiability vacant toAvailiable)
         |> Seq.ofList
