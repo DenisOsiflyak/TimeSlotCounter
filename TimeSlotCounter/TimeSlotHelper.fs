@@ -56,38 +56,28 @@ module TimeSlotHelper =
         | _ -> raise (new ArgumentException("Slot start date can't be more than end date"))
 
     let calculateTimeSlots (excludeBookingIds: Set<int> option) (space: Space): seq<TimeSlotAvailability> =
-        let bookings =
-            match excludeBookingIds with
-            | Some ids -> space.Bookings |> List.filter (fun booking -> not (Seq.contains (booking.Id) ids))
-            | None -> []
-        let toAvailiable slot =
-            Available({StartDate= fst slot; EndDate= snd slot})
-        let toBusy slot =
-            Busy({StartDate= fst slot; EndDate= snd slot})
-
-        let rec getAvailiability slots converter =
-            match slots with
-            | head::tail -> converter head :: (getAvailiability tail converter)
+        let rec getAvailability existingBookings =
+            match existingBookings with
+            | head::tail when isLastElement head existingBookings ->
+                [Busy({StartDate= head.StartDate; EndDate= head.EndDate})] :: getAvailability tail
+            | head::tail ->
+                [Busy({StartDate= head.StartDate; EndDate= head.EndDate});
+                Available({StartDate= head.EndDate.AddMinutes(+ float space.SetupMinutes); EndDate= tail.Head.StartDate.AddMinutes(- float space.TeardownMinutes)})]
+                :: getAvailability tail
             | [] -> []
 
-        let booked =
-            bookings
-            |> List.map(fun slot -> (slot.EventSlot.StartDate.AddMinutes(- float space.SetupMinutes), slot.EventSlot.EndDate.AddMinutes(float space.TeardownMinutes)))
-        
-        let vacant =
-            booked
-            |> List.map(fun slot -> [fst slot; snd slot])
-            |> List.collect(fun slot -> slot)
-            |> List.append [DateTimeOffset.MinValue; DateTimeOffset.MaxValue]
-            |> List.sort
-            |> List.pairwise
-            |> List.except booked
-            |> List.map(fun time ->
-                match time with
-                | time when (fst time) = DateTimeOffset.MinValue -> (fst time, (snd time).AddMinutes(- float space.TeardownMinutes))
-                | time when (snd time) = DateTimeOffset.MaxValue -> ((fst time).AddMinutes(float space.SetupMinutes), (snd time))
-                | _ -> ((fst time).AddMinutes(float space.SetupMinutes), (snd time).AddMinutes(- float space.TeardownMinutes)))
+        let busySlots =
+            match excludeBookingIds with
+            | Some ids ->
+                space.Bookings
+                |> Seq.filter (fun booking -> not (Seq.contains (booking.Id) ids))
+                |> Seq.sort
+                |> Seq.map(fun booking -> { StartDate= booking.ReservedSlot.StartDate; EndDate= booking.ReservedSlot.EndDate})
+                |> List.ofSeq
+            | None -> []
 
-        (getAvailiability booked toBusy)
-        |> List.append (getAvailiability vacant toAvailiable)
-        |> Seq.ofList
+        
+        (getAvailability busySlots) |> List.collect(fun x -> x) |> Seq.ofList
+
+
+
