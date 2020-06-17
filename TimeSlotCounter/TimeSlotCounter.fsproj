@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="DateTimeRecurrenceRuleConverterTypes.fs" />
+    <Compile Include="DateTimeRecurrenceRuleConverter.fs" />
     <Compile Include="TimeSlotTypes.fs" />
     <Compile Include="TimeSlotHelper.fs" />
   </ItemGroup>
